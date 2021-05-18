@@ -12,20 +12,35 @@ set.seed(1088)
 
    n=20
    rand1 <- 400
-   Time=rnorm(n, 500, 150)
+   Time=rnorm(n, 500, 150)    # time of death, just normal distributions
    
+   # show area under the pdf=1
+   # xy <-density(Time)
+   # plot(density(Time))
+   # library(sfsmisc)
+   # integrate.xy(xy$x,xy$y)
+   # plot(xy$x,xy$y )
+   
+   # another example
+   # pdraw=rexp(n=200, 2)
+   # pdraw <- pdraw/sum(pdraw)
+   # plot(pdraw, type='l')
+   # # Calculate the cumulative probability at each qdraw
+   # cpdraw <- cumsum(pdraw)
+   # plot(cpdraw, type='l')
+   # st <- 1- cpdraw
+   # plot(st, type='l')
+ 
    Time1 <- data.frame(Time=Time) 
-   rand1 <- 400
-
+   rand1 <- 400                                 # arbitrary time point to aid explanation
 
    p <- ggplot(Time1, aes(Time)) +
       geom_density(fill="grey")
  
-   
    # subset region and plot
    d <- ggplot_build(p)$data[[1]]
     
-   dput(   sort(as.vector(unlist(Time1))))
+  # dput(sort(as.vector(unlist(Time1))))
    
    p <- p + geom_area(data = subset(d, x > rand1), aes(x=x, y=y), fill="lightgrey") +
       geom_segment(x=rand1, xend=rand1,
@@ -45,7 +60,7 @@ set.seed(1088)
       theme_bw()
    
    # S(t)
-   pg <- ggplot_build(P2)$data[[1]]
+   pg <- ggplot_build(P2)$data[[1]]  # pull out data from cdf plot
    P3 <- ggplot(pg, aes(x = x, y = 1-y )) + geom_step() +
       ggtitle("S(t) The proportion of the population survived to time t \n S(t) = 1 - F(t) = P(T>t)")  + 
       xlab("Time") +
@@ -85,9 +100,20 @@ set.seed(1088)
             3921.6,   3818.9,   3456.3,   3260.5,   2944.2,   2581.5,   2243.5,   1874.0,
             1521.2,   1150.9,   858.3,   656.0,    430.2)
    
-   x <- 0:(length(dx)-1) # age vector ( this could be time )
+   x <- 0:(length(dx)-1) # age vector ( this could be time ) used in regression
    n=100
+   
+   # unpack line 114
+   # plot (dx/sum(dx))            # f(t) pdf
+   # cumsum(dx/sum(dx))           # F(t) cdf
+   # st <- 1 - cumsum(dx/sum(dx)) # s(t) 1-F(t)
+   # plot(st, type="l")
+   # h <- (dx/sum(dx)) / st       # h(t) = f(t)/S(t)
+   # plot(h, log="y")
+   
    haz <-    (dx/sum(dx)) / (1-cumsum(dx/sum(dx)))
+   # proportion of deaths per 10000 / 1 - cumsum(proportion of deaths per 10000)
+   
    
    plot(haz,   t='l', log="y",
         xlab="age", ylab="Annual hazards force of mortality h(t)", 
@@ -101,7 +127,7 @@ set.seed(1088)
    dx <- datadist(dd)
    options(datadist='dx')
    
-   f <- ols(log(y) ~ x , dd)
+   f <- ols(log(y) ~ x , dd)   
    y <- haz[1:100]
    x <- 1: 100
    # slope
@@ -564,7 +590,7 @@ set.seed(1088)
    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
    # In addition to f(), F(), S(), h(), and H() -all different ways of summarizing the same
    # information-a sixth way, Q(), is of use for to create artificial survival-time data sets.
-   # if U ∼ U[0; 1], then (1 − U) ∼ U[0; 1] so dispense with 1- in weibull formula
+   # if U is U[0; 1], then (1 − U) ∼ U[0; 1] so dispense with 1- in weibull formula
    # uniformly distributed random numbers can be transformed into survival times
    
    n=100
